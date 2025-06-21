@@ -18,7 +18,8 @@ import java.util.UUID;
         uniqueConstraints = @UniqueConstraint(
                 name = "uk_user_draw_numbers",
                 columnNames = {"user_id", "draw_id", "selected_numbers_hash"}
-        ))@AllArgsConstructor
+        ))
+@AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class Ticket {
@@ -65,7 +66,7 @@ public class Ticket {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "draw_id", nullable = false)
     private Draw draw;
 
