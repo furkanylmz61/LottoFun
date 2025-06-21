@@ -40,11 +40,6 @@ public class User {
     @Builder.Default
     private BigDecimal balance = BigDecimal.valueOf(1000.00);
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    @Builder.Default
-    private UserRole role = UserRole.USER;
-
     @Column(name = "is_active")
     @Builder.Default
     private Boolean isActive = true;
