@@ -1,4 +1,4 @@
-package com.assesment.lottofun.dto.response;
+package com.assesment.lottofun.controller.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,9 +15,6 @@ public class ApiResponse<T> {
     private T data;
     private LocalDateTime timestamp;
 
-    public static <T> ApiResponse<T> success(T data) {
-        return new ApiResponse<>(true, "Success", data, LocalDateTime.now());
-    }
 
     public static <T> ApiResponse<T> success(String message, T data) {
         return new ApiResponse<>(true, message, data, LocalDateTime.now());

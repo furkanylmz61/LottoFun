@@ -1,4 +1,4 @@
-package com.assesment.lottofun.dto.response;
+package com.assesment.lottofun.controller.response;
 
 import lombok.Data;
 import org.springframework.data.domain.Page;
