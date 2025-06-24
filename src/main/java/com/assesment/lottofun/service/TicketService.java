@@ -61,6 +61,7 @@ public class TicketService {
                 .status(TicketStatus.WAITING_FOR_DRAW)
                 .userId(user.getId())
                 .drawId(request.getDrawId())
+                .draw(activeDraw)
                 .build();
 
         Ticket savedTicket = ticketRepository.save(ticket);
