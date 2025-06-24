@@ -40,10 +40,6 @@ public class User {
     @Builder.Default
     private BigDecimal balance = BigDecimal.valueOf(1000.00);
 
-    @Column(name = "is_active")
-    @Builder.Default
-    private Boolean isActive = true;
-
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;

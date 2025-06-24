@@ -46,6 +46,9 @@ public class Ticket {
     @Column(name = "match_count")
     private Integer matchCount;
 
+    @Column(name = "match_numbers")
+    private String matchedNumbers;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
@@ -62,13 +65,20 @@ public class Ticket {
     @Column(name = "claimed_at")
     private LocalDateTime claimedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    // Foreign key columns
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
+    @Column(name = "draw_id", nullable = false)
+    private Long drawId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "draw_id", nullable = false)
+    @JoinColumn(name = "draw_id", insertable = false, updatable = false)
     private Draw draw;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
 
     @PrePersist
     private void generateTicketNumber() {
