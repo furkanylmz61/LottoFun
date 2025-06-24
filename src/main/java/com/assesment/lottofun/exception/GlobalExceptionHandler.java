@@ -1,6 +1,6 @@
 package com.assesment.lottofun.exception;
 
-import com.assesment.lottofun.dto.response.ErrorResponse;
+import com.assesment.lottofun.controller.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
