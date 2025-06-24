@@ -21,7 +21,7 @@ public class LotteryUtils {
      * - All numbers between 1-49
      * - All numbers unique
      */
-    public static void validateNumbers(List<Integer> numbers) {
+    public static void validateNumbers(HashSet<Integer> numbers) {
         if (numbers == null || numbers.isEmpty()) {
             throw new BusinessException("Numbers cannot be null or empty");
         }
@@ -98,7 +98,7 @@ public class LotteryUtils {
         Set<Integer> winningNumbers = new HashSet<>();
 
         while (winningNumbers.size() < 5) {
-            int number = RANDOM.nextInt(49) + 1; // 1-49
+            int number = RANDOM.nextInt(49) + 1;
             winningNumbers.add(number);
         }
 
@@ -114,7 +114,7 @@ public class LotteryUtils {
         Set<Integer> selected = new HashSet<>(selectedNumbers);
         Set<Integer> winning = new HashSet<>(winningNumbers);
 
-        selected.retainAll(winning); // Intersection
+        selected.retainAll(winning);
         return selected.size();
     }
 
@@ -141,7 +141,7 @@ public class LotteryUtils {
     /**
      * Validates if numbers are in ascending order (for consistency)
      */
-    public static List<Integer> ensureSortedNumbers(List<Integer> numbers) {
+    public static List<Integer> ensureSortedNumbers(HashSet<Integer> numbers) {
         return numbers.stream()
                 .sorted()
                 .collect(Collectors.toList());
