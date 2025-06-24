@@ -19,6 +19,8 @@ public interface DrawRepository extends JpaRepository<Draw, Long> {
 
     List<Draw> findByStatusAndDrawDateBefore(DrawStatus status, LocalDateTime dateTime);
 
+    List<Draw> findByStatus(DrawStatus status);
+
     Page<Draw> findByStatusInOrderByDrawDateDesc(List<DrawStatus> statuses, Pageable pageable);
 
     @Query("SELECT d FROM Draw d WHERE d.status = :status ORDER BY d.drawDate ASC")
