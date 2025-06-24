@@ -1,14 +1,13 @@
 package com.assesment.lottofun.service;
 
-import com.assesment.lottofun.dto.request.AuthRequest;
-import com.assesment.lottofun.dto.request.RegisterRequest;
-import com.assesment.lottofun.dto.response.AuthResponse;
+import com.assesment.lottofun.controller.request.AuthRequest;
+import com.assesment.lottofun.controller.request.RegisterRequest;
+import com.assesment.lottofun.controller.response.AuthResponse;
 import com.assesment.lottofun.entity.User;
 import com.assesment.lottofun.exception.BusinessException;
 import com.assesment.lottofun.repository.UserRepository;
 import com.assesment.lottofun.security.JwtService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,9 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -31,47 +27,26 @@ public class AuthService {
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
-        log.info("Attempting to register user with email: {}", request.getEmail());
-
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new BusinessException("User with email " + request.getEmail() + " already exists");
+            throw new BusinessException("Email already registered: " + request.getEmail());
         }
 
-        User user = User.builder()
+        User newUser = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .build();
 
-        User savedUser = userRepository.save(user);
-        log.info("User registered successfully with ID: {}", savedUser.getId());
+        userRepository.save(newUser);
 
-        String token = jwtService.generateToken(
-                org.springframework.security.core.userdetails.User.builder()
-                        .username(savedUser.getEmail())
-                        .password(savedUser.getPassword())
-                        .authorities("ROLE_USER")
-                        .build()
-        );
+        String token = jwtService.generateTokenFromEmail(newUser.getEmail());
 
-        LocalDateTime tokenExpiration = LocalDateTime.now()
-                .plusSeconds(jwtService.getExpirationTime() / 1000);
-
-        return new AuthResponse(
-                token,
-                savedUser.getEmail(),
-                savedUser.getFirstName(),
-                savedUser.getLastName(),
-                savedUser.getBalance(),
-                tokenExpiration
-        );
+        return new AuthResponse(token, newUser.getEmail());
     }
 
     @Transactional(readOnly = true)
     public AuthResponse authenticate(AuthRequest request) {
-        log.info("Attempting to authenticate user with email: {}", request.getEmail());
-
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -80,44 +55,12 @@ public class AuthService {
                     )
             );
 
-            User user = userRepository.findByEmail(request.getEmail())
-                    .orElseThrow(() -> new BusinessException("User not found"));
+            String token = jwtService.generateTokenFromEmail(request.getEmail());
 
-            if (!user.getIsActive()) {
-                throw new BusinessException("User account is disabled");
-            }
+            return new AuthResponse(token, request.getEmail());
 
-            log.info("User authenticated successfully: {}", user.getEmail());
-
-            String token = jwtService.generateToken(
-                    org.springframework.security.core.userdetails.User.builder()
-                            .username(user.getEmail())
-                            .password(user.getPassword())
-                            .authorities("ROLE_USER")
-                            .build()
-            );
-
-            LocalDateTime tokenExpiration = LocalDateTime.now()
-                    .plusSeconds(jwtService.getExpirationTime() / 1000);
-
-            return new AuthResponse(
-                    token,
-                    user.getEmail(),
-                    user.getFirstName(),
-                    user.getLastName(),
-                    user.getBalance(),
-                    tokenExpiration
-            );
-
-        } catch (BadCredentialsException e) {
-            log.error("Authentication failed for user: {}", request.getEmail());
+        } catch (BadCredentialsException ex) {
             throw new BadCredentialsException("Invalid email or password");
         }
-    }
-
-    @Transactional(readOnly = true)
-    public User getCurrentUser(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException("User not found"));
     }
 }
