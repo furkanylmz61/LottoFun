@@ -1,6 +1,9 @@
 package com.assesment.lottofun.entity;
 
+import com.assesment.lottofun.util.LotteryUtils;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +14,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -64,5 +68,11 @@ public class User {
 
     public void addBalance(BigDecimal amount) {
         this.balance = this.balance.add(amount);
+    }
+
+    public boolean hasTicketAlready(Long drawId, Set<Integer> selectedNumbers) {
+        return tickets.stream()
+                .anyMatch(ticket -> ticket.getDraw().getId().equals(drawId) &&
+                        ticket.getSelectedNumbers().equals(LotteryUtils.numbersToString(selectedNumbers)));
     }
 }

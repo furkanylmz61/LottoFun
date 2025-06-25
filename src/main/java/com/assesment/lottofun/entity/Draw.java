@@ -1,5 +1,6 @@
 package com.assesment.lottofun.entity;
 
+import com.assesment.lottofun.util.DrawUtil;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Data
@@ -65,13 +67,40 @@ public class Draw {
                 drawDate.isAfter(LocalDateTime.now());
     }
 
-    public boolean isReadyForExecution() {
-        return status == DrawStatus.DRAW_OPEN &&
-                !drawDate.isAfter(LocalDateTime.now());
-    }
-
     public void registerTicket(BigDecimal ticketPrice) {
         this.totalTickets++;
         this.totalPrizePool = this.totalPrizePool.add(ticketPrice);
+    }
+
+    public void setAsClosed() {
+        if (this.status != DrawStatus.DRAW_OPEN) {
+            throw new IllegalStateException("Draw can only be closed from DRAW_OPEN status, current: " + this.status);
+        }
+        this.status = DrawStatus.DRAW_CLOSED;
+    }
+
+    public void setAsExtracted() {
+        if (this.status != DrawStatus.DRAW_CLOSED) {
+            throw new IllegalStateException("Draw can only be extracted from DRAW_CLOSED status, current: " + this.status);
+        }
+        this.winningNumbers = DrawUtil.generateWinningNumbers();
+        this.executedAt = LocalDateTime.now();
+        this.status = DrawStatus.DRAW_EXTRACTED;
+        this.tickets.forEach(t-> t.markAsExtracted(winningNumbers));
+    }
+
+    public void setAsFinalized(Map<Integer, Integer> macthCountPricePercantage) {
+        if (this.status != DrawStatus.DRAW_EXTRACTED) {
+            throw new IllegalStateException("Draw can only be finalized from DRAW_EXTRACTED status, current: " + this.status);
+        }
+        this.status = DrawStatus.DRAW_FINALIZED;
+    }
+
+    public void markPrizesDistributed() {
+        this.prizesDistributedAt = LocalDateTime.now();
+    }
+
+    public boolean isEligibleForProcess(){
+        return this.status == DrawStatus.DRAW_OPEN;
     }
 }
