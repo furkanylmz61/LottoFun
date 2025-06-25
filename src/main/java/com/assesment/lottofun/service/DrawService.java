@@ -34,123 +34,113 @@ public class DrawService {
     public Draw activeDraw() {
         return drawRepository.findFirstByStatusOrderByDrawDateAsc(DrawStatus.DRAW_OPEN)
                 .filter(draw -> draw.getDrawDate().isAfter(LocalDateTime.now()))
-                .orElseThrow(() -> new ResourceNotFoundException("No active draw is currently available"));
+                .orElseThrow(() -> new ResourceNotFoundException("No active draw available"));
     }
 
     @Transactional
     public Draw newDraw() {
         drawRepository.findFirstByStatusOrderByDrawDateAsc(DrawStatus.DRAW_OPEN)
                 .ifPresent(activeDraw -> {
-                    throw new IllegalStateException(
-                            "An active draw already exists (id=" + activeDraw.getId() + ").");
+                    throw new IllegalStateException("Active draw already exists: " + activeDraw.getId());
                 });
+
         LocalDateTime scheduledDate = LocalDateTime.now()
                 .plusMinutes(lotteryConfig.getDraw().getFrequencyMinutes());
+
         Draw newDraw = Draw.builder()
                 .drawDate(scheduledDate)
                 .status(DrawStatus.DRAW_OPEN)
                 .build();
+
         return drawRepository.save(newDraw);
     }
 
     @Transactional
-    public void executePendingDraws() {
-        List<Draw> pendingDraws = drawRepository
-                .findByStatusAndDrawDateBefore(DrawStatus.DRAW_OPEN, LocalDateTime.now());
-
-        if (pendingDraws.isEmpty()) {
-            return;
-        }
-        pendingDraws.forEach(this::process);
-    }
-
-
-    @Transactional
-    protected void process(Draw draw) {
+    public void process(Draw draw) {
         if (!draw.isEligibleForProcess()) {
             return;
         }
 
-        // Draw'ı kapat
         draw.setAsClosed();
         drawRepository.save(draw);
-
-        // Winning numbers'ı çek
         draw.setAsExtracted();
         drawRepository.save(draw);
 
-        // Match count'lara göre ticket sayılarını topla
-        Map<Integer, Long> matchCountTotals = new HashMap<>();
+        processTickets(draw);
 
-        // Pagination ile tüm tickets'ları işle ve match count'larını topla
+        draw.setAsFinalized(createPrizePercentageMap());
+        draw.markPrizesDistributed();
+        drawRepository.save(draw);
+    }
+
+    private void processTickets(Draw draw) {
+        Map<Integer, Long> matchCountTotals = calculateMatchCounts(draw);
+        assignPrizes(draw, matchCountTotals);
+    }
+
+    private Map<Integer, Long> calculateMatchCounts(Draw draw) {
+        Map<Integer, Long> matchCountTotals = new HashMap<>();
         int page = 0;
         int size = 1000;
-        boolean hasMoreTickets = true;
 
-        while (hasMoreTickets) {
+        while (true) {
             Pageable pageable = Pageable.ofSize(size).withPage(page);
-            Page<Ticket> ticketPage = ticketRepository.findByDrawIdAndStatus(draw.getId(), TicketStatus.WAITING_FOR_DRAW, pageable);
-            List<Ticket> tickets = ticketPage.getContent();
+            Page<Ticket> ticketPage = ticketRepository.findByDrawIdAndStatus(
+                    draw.getId(), TicketStatus.WAITING_FOR_DRAW, pageable);
 
+            List<Ticket> tickets = ticketPage.getContent();
             if (tickets.isEmpty()) {
-                hasMoreTickets = false;
                 break;
             }
 
-            // Bu sayfadaki tickets'ların match count'larını topla
             for (Ticket ticket : tickets) {
+                ticket.markAsExtracted(draw.getWinningNumbers());
                 int matchCount = ticket.getMatchCount();
                 matchCountTotals.put(matchCount, matchCountTotals.getOrDefault(matchCount, 0L) + 1);
             }
 
+            ticketRepository.saveAll(tickets);
+
+            if (!ticketPage.hasNext()) {
+                break;
+            }
             page++;
-            hasMoreTickets = ticketPage.hasNext();
         }
 
-        // Prize percentages map'ini oluştur
-        Map<Integer, Integer> matchCountPricePercentage = createPrizePercentageMap();
+        return matchCountTotals;
+    }
 
-        // Draw'ı finalize et
-        draw.setAsFinalized(matchCountPricePercentage);
-        drawRepository.save(draw);
-
-        // Prize pool'u al
+    private void assignPrizes(Draw draw, Map<Integer, Long> matchCountTotals) {
         BigDecimal totalPrizePool = draw.getTotalPrizePool();
+        Map<Integer, Integer> prizePercentages = createPrizePercentageMap();
+        Map<Integer, BigDecimal> prizePerTicket = calculatePrizePerTicket(totalPrizePool, matchCountTotals, prizePercentages);
 
-        // Her match level için prize per ticket hesapla
-        Map<Integer, BigDecimal> prizePerTicketByMatch = calculatePrizePerTicket(totalPrizePool, matchCountTotals, matchCountPricePercentage);
+        int page = 0;
+        int size = 1000;
 
-        // Şimdi tekrar pagination ile tickets'ları işle ve prize'ları ata
-        page = 0;
-        hasMoreTickets = true;
-
-        while (hasMoreTickets) {
+        while (true) {
             Pageable pageable = Pageable.ofSize(size).withPage(page);
-            Page<Ticket> ticketPage = ticketRepository.findByDrawIdAndStatus(draw.getId(), TicketStatus.WAITING_FOR_DRAW, pageable);
-            List<Ticket> tickets = ticketPage.getContent();
+            Page<Ticket> ticketPage = ticketRepository.findByDrawIdAndStatus(
+                    draw.getId(), TicketStatus.WAITING_FOR_DRAW, pageable);
 
+            List<Ticket> tickets = ticketPage.getContent();
             if (tickets.isEmpty()) {
-                hasMoreTickets = false;
                 break;
             }
 
-            // Bu sayfadaki tickets'lara prize'ları ata
             for (Ticket ticket : tickets) {
                 int matchCount = ticket.getMatchCount();
-                BigDecimal prizeAmount = prizePerTicketByMatch.getOrDefault(matchCount, BigDecimal.ZERO);
+                BigDecimal prizeAmount = prizePerTicket.getOrDefault(matchCount, BigDecimal.ZERO);
                 ticket.setPrizeAmount(prizeAmount);
             }
 
-            // Bu sayfadaki tickets'ları kaydet
             ticketRepository.saveAll(tickets);
 
+            if (!ticketPage.hasNext()) {
+                break;
+            }
             page++;
-            hasMoreTickets = ticketPage.hasNext();
         }
-
-        // Ödüllerin dağıtıldığını işaretle
-        draw.markPrizesDistributed();
-        drawRepository.save(draw);
     }
 
     private Map<Integer, Integer> createPrizePercentageMap() {
@@ -166,36 +156,35 @@ public class DrawService {
     private Map<Integer, BigDecimal> calculatePrizePerTicket(BigDecimal totalPool,
                                                              Map<Integer, Long> matchCountTotals,
                                                              Map<Integer, Integer> prizePercentages) {
-        Map<Integer, BigDecimal> prizePerTicketByMatch = new HashMap<>();
+        Map<Integer, BigDecimal> prizePerTicket = new HashMap<>();
 
         prizePercentages.forEach((matchCount, percentage) -> {
             Long ticketCount = matchCountTotals.get(matchCount);
             if (ticketCount == null || ticketCount == 0) {
-                prizePerTicketByMatch.put(matchCount, BigDecimal.ZERO);
+                prizePerTicket.put(matchCount, BigDecimal.ZERO);
                 return;
             }
 
-            // Bu seviye için toplam ödül havuzu
             BigDecimal tierPool = totalPool
                     .multiply(BigDecimal.valueOf(percentage))
                     .divide(BigDecimal.valueOf(100));
 
-            // Her ticket için ödül miktarı
-            BigDecimal prizePerTicket = tierPool.divide(
+            BigDecimal prize = tierPool.divide(
                     BigDecimal.valueOf(ticketCount),
-                    2, // scale
+                    2,
                     BigDecimal.ROUND_DOWN
             );
 
-            prizePerTicketByMatch.put(matchCount, prizePerTicket);
+            prizePerTicket.put(matchCount, prize);
         });
 
-        return prizePerTicketByMatch;
+        return prizePerTicket;
     }
+
     @Transactional(readOnly = true)
     public Draw getDrawById(Long drawId) {
         return drawRepository.findById(drawId)
-                .orElseThrow(() -> new ResourceNotFoundException("Draw not found with ID: " + drawId));
+                .orElseThrow(() -> new ResourceNotFoundException("Draw not found: " + drawId));
     }
 
     @Transactional(readOnly = true)
@@ -210,8 +199,6 @@ public class DrawService {
         Page<DrawResponse> responsePage = drawsPage.map(DrawResponse::fromEntity);
         return PageResponse.from(responsePage);
     }
-
-
 
     @Transactional(readOnly = true)
     public DrawResponse currentActiveDraw() {

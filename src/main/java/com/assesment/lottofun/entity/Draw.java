@@ -86,7 +86,6 @@ public class Draw {
         this.winningNumbers = DrawUtil.generateWinningNumbers();
         this.executedAt = LocalDateTime.now();
         this.status = DrawStatus.DRAW_EXTRACTED;
-        this.tickets.forEach(t-> t.markAsExtracted(winningNumbers));
     }
 
     public void setAsFinalized(Map<Integer, Integer> macthCountPricePercantage) {

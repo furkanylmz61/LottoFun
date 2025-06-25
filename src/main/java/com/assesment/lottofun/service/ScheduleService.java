@@ -5,7 +5,6 @@ import com.assesment.lottofun.exception.BusinessException;
 import com.assesment.lottofun.exception.ResourceNotFoundException;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +12,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ScheduleService {
@@ -23,8 +21,8 @@ public class ScheduleService {
 
     @PostConstruct
     public void init() {
-        Draw active = findOrCreateActiveDraw();
-        scheduleDrawExecution(active);
+        Draw activeDraw = findOrCreateActiveDraw();
+        scheduleDrawExecution(activeDraw);
     }
 
     private Draw findOrCreateActiveDraw() {
@@ -38,28 +36,29 @@ public class ScheduleService {
     }
 
     private void scheduleDrawExecution(Draw draw) {
+        LocalDateTime drawDate = draw.getDrawDate();
+        long delayMs = Duration.between(LocalDateTime.now(), drawDate).toMillis();
 
-        LocalDateTime scheduleDrawDate = draw.getDrawDate();
-        long delayMs = Duration.between(LocalDateTime.now(), scheduleDrawDate).toMillis();
-        if (delayMs < 0) delayMs = 0;
+        if (delayMs < 0) {
+            delayMs = 0;
+        }
 
-        taskScheduler.schedule(() -> {
 
-            try {
-                drawService.process(draw);
-            } catch (BusinessException bex) {
-                log.warn("Business error during draw execution: {}", bex.getMessage());
-            } catch (Exception ex) {
-                log.error("Unexpected error during draw execution", ex);
-            }
+        taskScheduler.schedule(() -> executeDrawAndScheduleNext(draw),
+                new Date(System.currentTimeMillis() + delayMs));
+    }
 
-            try {
-                Draw newDraw = drawService.newDraw();
-                scheduleDrawExecution(newDraw);
-            } catch (Exception ex) {
-                log.error("Failed to create or schedule next draw", ex);
-            }
+    private void executeDrawAndScheduleNext(Draw draw) {
 
-        }, new Date(System.currentTimeMillis() + delayMs));
+        try {
+            drawService.process(draw);
+        } catch (Exception ex) {
+        }
+
+        try {
+            Draw nextDraw = drawService.newDraw();
+            scheduleDrawExecution(nextDraw);
+        } catch (Exception ex) {
+        }
     }
 }
