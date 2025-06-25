@@ -10,7 +10,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
@@ -44,7 +44,7 @@ lottery:
     min-number: 1
     max-number: 49
   draw:
-    frequency-hours: 24
+    frequencyMinutes: 1
   prizes:
     jackpot-percentage: 50
     high-percentage: 25

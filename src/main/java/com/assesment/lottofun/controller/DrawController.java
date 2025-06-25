@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("api/draw")
 @RestController
-@SecurityRequirement(name = "Bearer Authentication")
+@SecurityRequirement(name = "JWT")
 public class DrawController {
 
     private final DrawService _drawService;
@@ -32,7 +32,7 @@ public class DrawController {
             description = "Retrieves information about the current active draw that accepts ticket purchases"
     )
     public ResponseEntity<ApiResponse<DrawResponse>> getCurrentDraw() {
-        DrawResponse currentDraw = _drawService.getCurrentActiveDrawResponse();
+        DrawResponse currentDraw = _drawService.currentActiveDraw();
         return ResponseEntity.ok(ApiResponse.success("Current draw retrieved successfully", currentDraw));
     }
 
@@ -48,7 +48,7 @@ public class DrawController {
 
 
         Pageable pageable = PageRequest.of(page, size);
-        PageResponse<DrawResponse> drawHistory = _drawService.getCompletedDraws(pageable);
+        PageResponse<DrawResponse> drawHistory = _drawService.completedDraw(pageable);
 
         return ResponseEntity.ok(ApiResponse.success("Draw history retrieved successfully", drawHistory));
     }

@@ -8,6 +8,7 @@ import com.assesment.lottofun.service.TicketService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/ticket")
 @RestController
-@SecurityRequirement(name = "Bearer Authentication")
+@SecurityRequirement(name = "JWT")
 public class TicketController {
 
     private final TicketService _ticketService;
@@ -35,7 +36,7 @@ public class TicketController {
             @Valid @RequestBody TicketPurchaseRequest request) {
 
         String userEmail = getCurrentUserEmail();
-        TicketBasicResponse ticket = _ticketService.purchaseTicket(userEmail, request);
+        TicketBasicResponse ticket = _ticketService.purchase(userEmail, request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Ticket purchased successfully", ticket));
     }
@@ -50,7 +51,7 @@ public class TicketController {
             @Parameter(description = "Ticket ID") @PathVariable Long ticketId) {
 
         String userEmail = getCurrentUserEmail();
-        TicketDetailResponse ticket = _ticketService.getTicketDetails(userEmail, ticketId);
+        TicketDetailResponse ticket = _ticketService.ticketDetail(userEmail, ticketId);
         return ResponseEntity.ok(ApiResponse.success("Ticket details retrieved successfully", ticket));
     }
 

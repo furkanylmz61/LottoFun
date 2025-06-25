@@ -22,7 +22,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/user")
-@SecurityRequirement(name = "Bearer Authentication")
+@SecurityRequirement(name = "JWT")
 @Tag(name = "User Management", description = "User profile and account management endpoints")
 public class UserController {
 
@@ -41,7 +41,7 @@ public class UserController {
         String userEmail = getCurrentUserEmail();
         log.info("Profile request for user: {}", userEmail);
 
-        UserProfileResponse profile = userService.getUserProfile(userEmail);
+        UserProfileResponse profile = userService.profile(userEmail);
 
         return ResponseEntity.ok(ApiResponse.success("Profile retrieved successfully", profile));
     }
@@ -55,7 +55,7 @@ public class UserController {
             @Parameter(description = "Draw ID") @PathVariable Long drawId) {
 
         String userEmail = getCurrentUserEmail();
-        List<TicketDetailResponse> tickets = userService.getUserTicketsForDraw(userEmail, drawId);
+        List<TicketDetailResponse> tickets = userService.userTicketsForDraw(userEmail, drawId);
         return ResponseEntity.ok(ApiResponse.success("User tickets for draw retrieved successfully", tickets));
     }
 

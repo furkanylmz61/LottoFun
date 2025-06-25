@@ -18,12 +18,13 @@ public class SwaggerConfig {
                         .title("LottoFun API")
                         .version("1.0.0")
                         .description("Backend API for LottoFun Lottery System"))
-                .addSecurityItem(new SecurityRequirement().addList("JWT"))
                 .components(new Components()
                         .addSecuritySchemes("JWT", new SecurityScheme()
                                 .type(SecurityScheme.Type.HTTP)
                                 .scheme("bearer")
                                 .bearerFormat("JWT")
-                                .description("JWT token for authentication")));
+                                .in(SecurityScheme.In.HEADER)
+                                .name("Authorization")
+                                .description("JWT token for authentication. Enter 'Bearer <token>'")));
     }
 }
