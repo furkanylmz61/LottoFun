@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Data
@@ -74,5 +75,55 @@ public class User {
         return tickets.stream()
                 .anyMatch(ticket -> ticket.getDraw().getId().equals(drawId) &&
                         ticket.getSelectedNumbers().equals(LotteryUtils.numbersToString(selectedNumbers)));
+    }
+
+    public List<Ticket> getWinningTickets() {
+        return tickets.stream()
+                .filter(ticket -> ticket.getStatus() == TicketStatus.WON)
+                .collect(Collectors.toList());
+    }
+    public List<Ticket> getTicketsForDraw(Long drawId) {
+        return tickets.stream()
+                .filter(ticket -> ticket.getDraw().getId().equals(drawId))
+                .collect(Collectors.toList());
+    }
+    public List<Ticket> getClaimableTickets() {
+        return tickets.stream()
+                .filter(Ticket::isClaimable)
+                .collect(Collectors.toList());
+    }
+    public Ticket getTicketById(Long ticketId) {
+        return tickets.stream()
+                .filter(ticket -> ticket.getId().equals(ticketId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public List<Ticket> getAllTicketsSortedByDate() {
+        return tickets.stream()
+                .sorted((t1, t2) -> t2.getPurchaseTimestamp().compareTo(t1.getPurchaseTimestamp()))
+                .collect(Collectors.toList());
+    }
+
+    public void claimTicket(Long ticketId) {
+        Ticket ticket = getTicketById(ticketId);
+
+        if (ticket == null) {
+            throw new IllegalArgumentException("Ticket not found for user");
+        }
+
+        if (!ticket.isClaimable()) {
+            throw new IllegalStateException("Ticket is not claimable. Status: " + ticket.getStatus() +
+                    (ticket.getClaimedAt() != null ? " (Already claimed)" : ""));
+        }
+
+        if (ticket.getPrizeAmount() == null || ticket.getPrizeAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Ticket has no prize amount to claim");
+        }
+
+        ticket.claim();
+        ticket.setStatus(TicketStatus.PRIZE_CLAIMED);
+
+        this.addBalance(ticket.getPrizeAmount());
     }
 }
