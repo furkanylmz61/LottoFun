@@ -24,7 +24,7 @@ public class UserService {
     private final TicketRepository ticketRepository;
 
     @Transactional(readOnly = true)
-    public UserProfileResponse getUserProfile(String email) {
+    public UserProfileResponse profile(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
 
@@ -42,23 +42,17 @@ public class UserService {
     }
 
     @Transactional
-    public User deductBalance(String email, BigDecimal amount) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
-
+    public void deductBalance(User user, BigDecimal amount) {
         user.deductBalance(amount);
-        userRepository.saveAll(List.of(user));
-        return user;
+        userRepository.save(user);
     }
 
     @Transactional(readOnly = true)
-    public List<TicketDetailResponse> getUserTicketsForDraw(String userEmail, Long drawId) {
-        log.debug("Fetching user tickets for draw. User: {}, Draw ID: {}", userEmail, drawId);
+    public List<TicketDetailResponse> userTicketsForDraw(String userEmail, Long drawId) {
 
         User user = getUserByEmail(userEmail);
-        List<Ticket> tickets = ticketRepository.findByUserIdAndDrawId(user.getId(), drawId);
-
-        return tickets.stream()
+        return user.getTickets().stream()
+                .filter(f -> f.getDraw().getId().equals(drawId))
                 .map(TicketDetailResponse::fromEntity)
                 .toList();
     }
@@ -67,5 +61,10 @@ public class UserService {
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+    }
+
+    @Transactional
+    public void save(User user) {
+        userRepository.save(user);
     }
 }

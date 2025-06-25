@@ -5,20 +5,16 @@ import com.assesment.lottofun.controller.request.TicketPurchaseRequest;
 import com.assesment.lottofun.controller.response.TicketBasicResponse;
 import com.assesment.lottofun.controller.response.TicketDetailResponse;
 import com.assesment.lottofun.entity.Ticket;
-import com.assesment.lottofun.entity.TicketStatus;
 import com.assesment.lottofun.entity.User;
 import com.assesment.lottofun.exception.BusinessException;
-import com.assesment.lottofun.exception.DuplicateTicketException;
-import com.assesment.lottofun.exception.InsufficientBalanceException;
 import com.assesment.lottofun.exception.ResourceNotFoundException;
 import com.assesment.lottofun.repository.TicketRepository;
-import com.assesment.lottofun.util.LotteryUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -29,11 +25,8 @@ public class TicketService {
     private final UserService userService;
     private final LotteryConfig lotteryConfig;
 
-    /**
-     * Purchase a lottery ticket for the user
-     */
     @Transactional
-    public TicketBasicResponse purchaseTicket(String userEmail, TicketPurchaseRequest request) {
+    public TicketBasicResponse purchase(String userEmail, TicketPurchaseRequest request) {
         var activeDraw = drawService.getDrawById(request.getDrawId());
         if (!activeDraw.canAcceptTickets()) {
             throw new BusinessException("The specified draw is no longer accepting tickets");
@@ -41,39 +34,29 @@ public class TicketService {
 
         User user = userService.getUserByEmail(userEmail);
         BigDecimal ticketPrice = lotteryConfig.getTicket().getPrice();
-
-        if (!user.hasSufficientBalance(ticketPrice)) {
-            throw new InsufficientBalanceException("Insufficient balance. Required: " + ticketPrice + ", Available: " + user.getBalance());
+        if (user.hasTicketAlready(request.getDrawId(), request.getSelectedNumbers())) {
+            throw new BusinessException("The ticket has already been purchased");
         }
 
-        List<Integer> sortedNumbers = LotteryUtils.ensureSortedNumbers(request.getSelectedNumbers());
-        String numbersHash = LotteryUtils.generateNumbersHash(sortedNumbers);
 
-        ticketRepository.findByUserIdAndDrawIdAndSelectedNumbersHash(user.getId(), activeDraw.getId(), numbersHash)
-                .ifPresent(ticket -> {
-                    throw new DuplicateTicketException("You have already purchased a ticket with these numbers for this draw");
-                });
+        user.deductBalance(ticketPrice);
+        userService.save(user);
 
-        Ticket ticket = Ticket.builder()
-                .selectedNumbers(LotteryUtils.numbersToString(sortedNumbers))
-                .selectedNumbersHash(numbersHash)
-                .purchasePrice(ticketPrice)
-                .status(TicketStatus.WAITING_FOR_DRAW)
-                .userId(user.getId())
-                .drawId(request.getDrawId())
-                .draw(activeDraw)
-                .build();
+        Set<Integer> selectedNumbers = request.getSelectedNumbers();
 
-        Ticket savedTicket = ticketRepository.save(ticket);
-        userService.deductBalance(userEmail, ticketPrice);
-
-        return TicketBasicResponse.fromEntity(savedTicket);
+        Ticket ticket = Ticket.createNew(
+                user,
+                activeDraw,
+                selectedNumbers,
+                ticketPrice
+        );
+        Ticket saved = ticketRepository.save(ticket);
+        return TicketBasicResponse.fromEntity(saved);
     }
 
 
-
     @Transactional(readOnly = true)
-    public TicketDetailResponse getTicketDetails(String userEmail, Long ticketId) {
+    public TicketDetailResponse ticketDetail(String userEmail, Long ticketId) {
         User user = userService.getUserByEmail(userEmail);
 
         Ticket ticket = user.getTickets().stream()
@@ -82,9 +65,7 @@ public class TicketService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Ticket not found for user: " + userEmail + " and ticket ID: " + ticketId)
                 );
-        if (!ticket.getUser().getId().equals(user.getId())) {
-            throw new BusinessException("Ticket does not belong to the current user");
-        }
+
         return TicketDetailResponse.fromEntity(ticket);
     }
 }

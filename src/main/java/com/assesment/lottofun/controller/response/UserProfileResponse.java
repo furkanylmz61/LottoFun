@@ -11,7 +11,6 @@ public class UserProfileResponse {
     private String firstName;
     private String lastName;
     private BigDecimal balance;
-    private LocalDateTime lastLoginAt;
     private LocalDateTime createdAt;
 
     public static UserProfileResponse fromEntity(com.assesment.lottofun.entity.User user) {
@@ -20,7 +19,6 @@ public class UserProfileResponse {
         response.setFirstName(user.getFirstName());
         response.setLastName(user.getLastName());
         response.setBalance(user.getBalance());
-        response.setLastLoginAt(user.getUpdatedAt());
         response.setCreatedAt(user.getCreatedAt());
         return response;
     }
