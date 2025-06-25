@@ -15,11 +15,8 @@ import java.util.Optional;
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
-    Page<Ticket> findByUserIdOrderByPurchaseTimestampDesc(Long userId, Pageable pageable);
 
-    List<Ticket> findByDrawId(Long drawId);
-
-    List<Ticket> findByDrawIdAndStatus(Long drawId, TicketStatus status);
+    Page<Ticket> findByDrawIdAndStatus(Long drawId, TicketStatus status, Pageable pageable);
 
     Optional<Ticket> findByUserIdAndDrawIdAndSelectedNumbersHash(
             Long userId, Long drawId, String selectedNumbersHash);
@@ -29,4 +26,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     @Query("SELECT t FROM Ticket t WHERE t.user.id = :userId AND t.draw.id = :drawId")
     List<Ticket> findByUserIdAndDrawId(@Param("userId") Long userId, @Param("drawId") Long drawId);
+
+    boolean existsByDrawIdAndSelectedNumbersHash(Long drawId, String selectedNumbersHash);
 }
