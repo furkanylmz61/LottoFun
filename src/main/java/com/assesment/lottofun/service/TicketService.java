@@ -51,6 +51,7 @@ public class TicketService {
                 ticketPrice
         );
         Ticket saved = ticketRepository.save(ticket);
+        activeDraw.registerTicket(ticketPrice);
         return TicketBasicResponse.fromEntity(saved);
     }
 

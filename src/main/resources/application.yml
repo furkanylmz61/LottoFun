@@ -44,7 +44,7 @@ lottery:
     min-number: 1
     max-number: 49
   draw:
-    frequencyMinutes: 1
+    frequencyMinutes: 3
   prizes:
     jackpot-percentage: 50
     high-percentage: 25

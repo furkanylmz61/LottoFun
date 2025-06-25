@@ -44,17 +44,16 @@ public class ScheduleService {
         }
 
 
-        taskScheduler.schedule(() -> executeDrawAndScheduleNext(draw),
+        taskScheduler.schedule(() -> executeDrawAndScheduleNew(draw),
                 new Date(System.currentTimeMillis() + delayMs));
     }
 
-    private void executeDrawAndScheduleNext(Draw draw) {
-
+    private void executeDrawAndScheduleNew(Draw draw) {
         try {
             drawService.process(draw);
+
         } catch (Exception ex) {
         }
-
         try {
             Draw nextDraw = drawService.newDraw();
             scheduleDrawExecution(nextDraw);
