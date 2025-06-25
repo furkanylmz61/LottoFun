@@ -4,6 +4,7 @@ import com.assesment.lottofun.config.LotteryConfig;
 import com.assesment.lottofun.controller.request.TicketPurchaseRequest;
 import com.assesment.lottofun.controller.response.TicketBasicResponse;
 import com.assesment.lottofun.controller.response.TicketDetailResponse;
+import com.assesment.lottofun.entity.Draw;
 import com.assesment.lottofun.entity.Ticket;
 import com.assesment.lottofun.entity.User;
 import com.assesment.lottofun.exception.BusinessException;
@@ -27,16 +28,14 @@ public class TicketService {
 
     @Transactional
     public TicketBasicResponse purchase(String userEmail, TicketPurchaseRequest request) {
-        var activeDraw = drawService.getDrawById(request.getDrawId());
+        Draw activeDraw = drawService.activeDraw();
+
         if (!activeDraw.canAcceptTickets()) {
-            throw new BusinessException("The specified draw is no longer accepting tickets");
+            throw new BusinessException("The current active draw is no longer accepting tickets");
         }
 
         User user = userService.getUserByEmail(userEmail);
         BigDecimal ticketPrice = lotteryConfig.getTicket().getPrice();
-        if (user.hasTicketAlready(request.getDrawId(), request.getSelectedNumbers())) {
-            throw new BusinessException("The ticket has already been purchased");
-        }
 
 
         user.deductBalance(ticketPrice);
@@ -50,8 +49,11 @@ public class TicketService {
                 selectedNumbers,
                 ticketPrice
         );
+
         Ticket saved = ticketRepository.save(ticket);
         activeDraw.registerTicket(ticketPrice);
+        drawService.save(activeDraw);
+
         return TicketBasicResponse.fromEntity(saved);
     }
 

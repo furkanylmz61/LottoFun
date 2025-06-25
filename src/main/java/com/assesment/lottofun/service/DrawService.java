@@ -204,4 +204,9 @@ public class DrawService {
     public DrawResponse currentActiveDraw() {
         return DrawResponse.fromEntity(activeDraw());
     }
+
+    @Transactional
+    public void save(Draw draw) {
+        drawRepository.save(draw);
+    }
 }

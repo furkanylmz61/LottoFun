@@ -26,7 +26,7 @@ public class DrawController {
         _drawService = drawService;
     }
 
-    @GetMapping("/current")
+    @GetMapping("/active")
     @Operation(
             summary = "Get current active draw",
             description = "Retrieves information about the current active draw that accepts ticket purchases"

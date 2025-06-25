@@ -15,5 +15,4 @@ public class TicketPurchaseRequest {
     @ValidLotteryNumbers
     private Set<Integer> selectedNumbers;
 
-    private Long drawId;
 }
