@@ -36,21 +36,6 @@ public class UserService {
         return UserProfileResponse.fromEntity(user);
     }
 
-    @Transactional
-    public User addBalance(String email, BigDecimal amount) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
-
-        user.addBalance(amount);
-        userRepository.saveAll(List.of(user));
-        return user;
-    }
-
-    @Transactional
-    public void deductBalance(User user, BigDecimal amount) {
-        user.deductBalance(amount);
-        userRepository.save(user);
-    }
 
     @Transactional(readOnly = true)
     public List<TicketDetailResponse> userTicketsForDraw(String userEmail, Long drawId) {
