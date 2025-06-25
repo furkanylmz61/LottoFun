@@ -1,6 +1,5 @@
 package com.assesment.lottofun.util;
 
-import com.assesment.lottofun.entity.TicketStatus;
 import com.assesment.lottofun.exception.BusinessException;
 import lombok.experimental.UtilityClass;
 
@@ -15,25 +14,14 @@ public class LotteryUtils {
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
-    /**
-     * Validates lottery numbers according to rules:
-     * - Exactly 5 numbers
-     * - All numbers between 1-49
-     * - All numbers unique
-     */
-    public static void validateNumbers(HashSet<Integer> numbers) {
+
+    public static void validateNumbers(Set<Integer> numbers) {
         if (numbers == null || numbers.isEmpty()) {
             throw new BusinessException("Numbers cannot be null or empty");
         }
 
         if (numbers.size() != 5) {
             throw new BusinessException("Exactly 5 numbers must be selected");
-        }
-
-        // Check for duplicates
-        Set<Integer> uniqueNumbers = new HashSet<>(numbers);
-        if (uniqueNumbers.size() != numbers.size()) {
-            throw new BusinessException("All numbers must be unique");
         }
 
         // Check range (1-49)
@@ -44,10 +32,8 @@ public class LotteryUtils {
         }
     }
 
-    /**
-     * Generates a hash for selected numbers to prevent duplicate tickets
-     */
-    public static String generateNumbersHash(List<Integer> numbers) {
+
+    public static String generateNumbersHash(Set<Integer> numbers) {
         // Sort numbers to ensure consistent hash regardless of input order
         List<Integer> sortedNumbers = numbers.stream()
                 .sorted()
@@ -73,16 +59,25 @@ public class LotteryUtils {
         }
     }
 
-
-    public static String numbersToString(List<Integer> numbers) {
+    public static String numbersToString(Set<Integer> numbers) {
         return numbers.stream()
                 .sorted()
                 .map(String::valueOf)
                 .collect(Collectors.joining(","));
     }
 
+    public static Set<Integer> stringToNumbers(String numbersString) {
+        if (numbersString == null || numbersString.trim().isEmpty()) {
+            return new HashSet<>();
+        }
 
-    public static List<Integer> stringToNumbers(String numbersString) {
+        return Arrays.stream(numbersString.split(","))
+                .map(String::trim)
+                .map(Integer::parseInt)
+                .collect(Collectors.toSet());
+    }
+
+    public static List<Integer> stringToNumbersList(String numbersString) {
         if (numbersString == null || numbersString.trim().isEmpty()) {
             return new ArrayList<>();
         }
@@ -90,44 +85,12 @@ public class LotteryUtils {
         return Arrays.stream(numbersString.split(","))
                 .map(String::trim)
                 .map(Integer::parseInt)
-                .collect(Collectors.toList());
-    }
-
-
-    public static List<Integer> generateWinningNumbers() {
-        Set<Integer> winningNumbers = new HashSet<>();
-
-        while (winningNumbers.size() < 5) {
-            int number = RANDOM.nextInt(49) + 1;
-            winningNumbers.add(number);
-        }
-
-        return winningNumbers.stream()
                 .sorted()
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Calculates how many numbers match between selected and winning numbers
-     */
-    public static int calculateMatches(List<Integer> selectedNumbers, List<Integer> winningNumbers) {
-        Set<Integer> selected = new HashSet<>(selectedNumbers);
-        Set<Integer> winning = new HashSet<>(winningNumbers);
 
-        selected.retainAll(winning);
-        return selected.size();
-    }
 
-    /**
-     * Determines ticket status based on match count
-     */
-    public static TicketStatus determineTicketStatus(int matchCount) {
-        return matchCount >= 2 ? TicketStatus.WON : TicketStatus.NOT_WON;
-    }
-
-    /**
-     * Gets prize tier based on match count
-     */
     public static String getPrizeTier(int matchCount) {
         return switch (matchCount) {
             case 5 -> "JACKPOT";

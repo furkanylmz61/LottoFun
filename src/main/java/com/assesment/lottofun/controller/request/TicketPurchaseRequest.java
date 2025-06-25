@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class TicketPurchaseRequest {
@@ -13,7 +13,7 @@ public class TicketPurchaseRequest {
     @NotNull(message = "Selected numbers are required")
     @Size(min = 5, max = 5, message = "Exactly 5 numbers must be selected")
     @ValidLotteryNumbers
-    private HashSet<Integer> selectedNumbers;
+    private Set<Integer> selectedNumbers;
 
     private Long drawId;
 }

@@ -30,7 +30,7 @@ public class TicketBasicResponse {
         response.setPurchasePrice(ticket.getPurchasePrice());
         response.setPurchaseTimestamp(ticket.getPurchaseTimestamp());
         response.setTicketStatus(ticket.getStatus().name());
-        response.setDrawId(ticket.getDrawId());
+        response.setDrawId(ticket.getDraw().getId());
 
         if (ticket.getDraw() != null) {
             response.setDrawDate(ticket.getDraw().getDrawDate());

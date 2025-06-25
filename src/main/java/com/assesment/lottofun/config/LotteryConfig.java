@@ -25,7 +25,7 @@ public class LotteryConfig {
 
     @Data
     public static class Draw {
-        private Integer frequencyHours = 24;
+        private Integer frequencyMinutes = 1;
     }
 
     @Data
