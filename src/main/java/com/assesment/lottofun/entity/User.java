@@ -82,16 +82,19 @@ public class User {
                 .filter(ticket -> ticket.getStatus() == TicketStatus.WON)
                 .collect(Collectors.toList());
     }
+
     public List<Ticket> getTicketsForDraw(Long drawId) {
         return tickets.stream()
                 .filter(ticket -> ticket.getDraw().getId().equals(drawId))
                 .collect(Collectors.toList());
     }
+
     public List<Ticket> getClaimableTickets() {
         return tickets.stream()
                 .filter(Ticket::isClaimable)
                 .collect(Collectors.toList());
     }
+
     public Ticket getTicketById(Long ticketId) {
         return tickets.stream()
                 .filter(ticket -> ticket.getId().equals(ticketId))
@@ -105,25 +108,8 @@ public class User {
                 .collect(Collectors.toList());
     }
 
-    public void claimTicket(Long ticketId) {
-        Ticket ticket = getTicketById(ticketId);
-
-        if (ticket == null) {
-            throw new IllegalArgumentException("Ticket not found for user");
-        }
-
-        if (!ticket.isClaimable()) {
-            throw new IllegalStateException("Ticket is not claimable. Status: " + ticket.getStatus() +
-                    (ticket.getClaimedAt() != null ? " (Already claimed)" : ""));
-        }
-
-        if (ticket.getPrizeAmount() == null || ticket.getPrizeAmount().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Ticket has no prize amount to claim");
-        }
-
-        ticket.claim();
-        ticket.setStatus(TicketStatus.PRIZE_CLAIMED);
-
+    public void claimTicket(Ticket ticket) {
+        ticket.setAsClaimed();
         this.addBalance(ticket.getPrizeAmount());
     }
 }

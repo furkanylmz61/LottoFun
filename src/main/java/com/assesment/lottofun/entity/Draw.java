@@ -11,8 +11,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 
 @Entity
 @Data
@@ -28,10 +26,6 @@ public class Draw {
 
     @Column(name = "winning_numbers")
     private String winningNumbers;
-
-    @Column(name = "total_tickets", nullable = false)
-    @Builder.Default
-    private Integer totalTickets = 0;
 
     @Column(name = "total_prize_pool", precision = 12, scale = 2)
     @Builder.Default
@@ -59,17 +53,9 @@ public class Draw {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "draw", fetch = FetchType.LAZY)
-    private List<Ticket> tickets;
-
     public boolean canAcceptTickets() {
         return status == DrawStatus.DRAW_OPEN &&
                 drawDate.isAfter(LocalDateTime.now());
-    }
-
-    public void registerTicket(BigDecimal ticketPrice) {
-        this.totalTickets++;
-        this.totalPrizePool = this.totalPrizePool.add(ticketPrice);
     }
 
     public void setAsClosed() {
@@ -88,18 +74,15 @@ public class Draw {
         this.status = DrawStatus.DRAW_EXTRACTED;
     }
 
-    public void setAsFinalized(Map<Integer, Integer> macthCountPricePercantage) {
+    public void setAsFinalized() {
         if (this.status != DrawStatus.DRAW_EXTRACTED) {
             throw new IllegalStateException("Draw can only be finalized from DRAW_EXTRACTED status, current: " + this.status);
         }
         this.status = DrawStatus.DRAW_FINALIZED;
-    }
-
-    public void markPrizesDistributed() {
         this.prizesDistributedAt = LocalDateTime.now();
     }
 
-    public boolean isEligibleForProcess(){
+    public boolean isEligibleForProcess() {
         return this.status == DrawStatus.DRAW_OPEN;
     }
 }

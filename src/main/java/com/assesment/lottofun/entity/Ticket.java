@@ -1,7 +1,7 @@
 package com.assesment.lottofun.entity;
 
+import com.assesment.lottofun.infrastructure.configuration.PrizeRules;
 import com.assesment.lottofun.util.DrawUtil;
-import com.assesment.lottofun.util.LotteryUtils;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,9 +37,6 @@ public class Ticket {
     @Column(name = "selected_numbers", nullable = false)
     private String selectedNumbers;
 
-    @Column(name = "selected_numbers_hash", nullable = false)
-    private String selectedNumbersHash;
-
     @Column(name = "purchase_price", nullable = false, precision = 8, scale = 2)
     private BigDecimal purchasePrice;
 
@@ -48,9 +45,6 @@ public class Ticket {
 
     @Column(name = "match_count")
     private Integer matchCount;
-
-    @Column(name = "match_numbers")
-    private String matchedNumbers;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -64,9 +58,6 @@ public class Ticket {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    @Column(name = "claimed_at")
-    private LocalDateTime claimedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "draw_id")
@@ -82,29 +73,24 @@ public class Ticket {
                 UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
-    public void processDrawResult(int matchCount, BigDecimal prizeAmount) {
-        this.matchCount = matchCount;
-        this.prizeAmount = prizeAmount;
-        this.status = matchCount >= 2 ? TicketStatus.WON : TicketStatus.NOT_WON;
-    }
-
-    public void claim() {
-        if (this.status != TicketStatus.WON) {
+    public void setAsClaimed() {
+        if (!isClaimable()) {
             throw new IllegalStateException("Only winning tickets can be claimed");
         }
-        this.claimedAt = LocalDateTime.now();
+        this.status = TicketStatus.PRIZE_CLAIMED;
     }
 
     public boolean isClaimable() {
-        return this.status == TicketStatus.WON && this.claimedAt == null;
+        return this.status == TicketStatus.WON;
     }
 
-    public void markAsExtracted(String winningNumbers) {
+    public void calculateResult(String winningNumbers) {
         if (this.status != TicketStatus.WAITING_FOR_DRAW) {
             throw new IllegalStateException("Ticket can only be marked as extracted from WAITING_FOR_DRAW status, current: " + this.status);
         }
         this.matchCount = getMatchCount(winningNumbers);
         this.status = matchCount >= 2 ? TicketStatus.WON : TicketStatus.NOT_WON;
+        this.prizeAmount = PrizeRules.getPrize(matchCount);
     }
 
     private int getMatchCount(String winningNumbers) {
@@ -123,7 +109,6 @@ public class Ticket {
     ) {
         Ticket ticket = new Ticket();
         ticket.selectedNumbers = DrawUtil.numbersToString(selectedNumbers);
-        ticket.selectedNumbersHash = LotteryUtils.generateNumbersHash(selectedNumbers);
         ticket.purchasePrice = purchasePrice;
         ticket.status = TicketStatus.WAITING_FOR_DRAW;
         ticket.draw = draw;
