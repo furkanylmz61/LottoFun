@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: lottofun-postgres
+    environment:
+      POSTGRES_DB: LottoFun
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 6410427
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - lottofun-network
+    restart: unless-stopped
+
+  # LottoFun Application
+  lottofun-app:
+    build: .
+    container_name: lottofun-app
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: LottoFun
+      DB_USERNAME: postgres
+      DB_PASSWORD: 6410427
+      JWT_SECRET: gScDvt7yDTlvKueKmH9CQU4r15EPMuLm5pyyGUhz9QzcpSO6Y8MZ6CzX8d45TwLsJkyEoDCbalxHxwXyXlysaA
+      JWT_EXPIRATION: 1800000
+    ports:
+      - "8080:8080"
+    networks:
+      - lottofun-network
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  lottofun-network:
+    driver: bridge
