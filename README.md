@@ -2,6 +2,10 @@
 
 A comprehensive lottery management system built with Spring Boot that provides a complete lottery experience including user registration, ticket purchasing, automated draws, and prize distribution.
 
+## 🌐 Live Server
+- **API Base URL:** `http://94.154.34.200:8080`
+- **Swagger Documentation:** [http://94.154.34.200:8080/swagger-ui/index.html](http://94.154.34.200:8080/swagger-ui/index.html)
+
 ## 🚀 Features
 
 ### Core Functionality
