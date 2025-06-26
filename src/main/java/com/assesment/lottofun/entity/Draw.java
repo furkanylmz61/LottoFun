@@ -1,6 +1,6 @@
 package com.assesment.lottofun.entity;
 
-import com.assesment.lottofun.util.DrawUtil;
+import com.assesment.lottofun.util.DrawUtils;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -69,7 +69,7 @@ public class Draw {
         if (this.status != DrawStatus.DRAW_CLOSED) {
             throw new IllegalStateException("Draw can only be extracted from DRAW_CLOSED status, current: " + this.status);
         }
-        this.winningNumbers = DrawUtil.generateWinningNumbers();
+        this.winningNumbers = DrawUtils.generateWinningNumbers();
         this.executedAt = LocalDateTime.now();
         this.status = DrawStatus.DRAW_EXTRACTED;
     }

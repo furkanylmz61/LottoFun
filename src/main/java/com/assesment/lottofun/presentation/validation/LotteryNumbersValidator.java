@@ -3,7 +3,7 @@ package com.assesment.lottofun.presentation.validation;
 import com.assesment.lottofun.entity.User;
 import com.assesment.lottofun.service.DrawService;
 import com.assesment.lottofun.service.UserService;
-import com.assesment.lottofun.util.LotteryUtils;
+import com.assesment.lottofun.util.NumberUtils;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.security.core.Authentication;
@@ -24,7 +24,7 @@ public class LotteryNumbersValidator implements ConstraintValidator<ValidLottery
     @Override
     public boolean isValid(Set<Integer> value, ConstraintValidatorContext context) {
         try {
-            LotteryUtils.validateNumbers(value);
+            NumberUtils.validateLotteryNumbers(value);
 
             String userEmail = getCurrentUserEmail();
             if (userEmail != null) {

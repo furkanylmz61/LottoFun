@@ -1,7 +1,7 @@
 package com.assesment.lottofun.presentation.dto.response;
 
 import com.assesment.lottofun.entity.Ticket;
-import com.assesment.lottofun.util.DrawUtil;
+import com.assesment.lottofun.util.NumberUtils;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -27,7 +27,7 @@ public class TicketDetailResponse {
         TicketDetailResponse response = new TicketDetailResponse();
         response.setId(ticket.getId());
         response.setTicketNumber(ticket.getTicketNumber());
-        response.setSelectedNumbers(DrawUtil.stringToNumbersList(ticket.getSelectedNumbers()));
+        response.setSelectedNumbers(NumberUtils.stringToNumbersList(ticket.getSelectedNumbers()));
         response.setPurchasePrice(ticket.getPurchasePrice());
         response.setPurchaseTimestamp(ticket.getPurchaseTimestamp());
         response.setTicketStatus(ticket.getStatus().name());
@@ -40,7 +40,7 @@ public class TicketDetailResponse {
             response.setDrawDate(draw.getDrawDate());
             response.setDrawStatus(draw.getStatus().name());
             response.setWinningNumbers(draw.getWinningNumbers() != null ?
-                    DrawUtil.stringToNumbersList(draw.getWinningNumbers()) : null);
+                    NumberUtils.stringToNumbersList(draw.getWinningNumbers()) : null);
         }
 
         return response;

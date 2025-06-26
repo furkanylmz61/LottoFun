@@ -2,7 +2,7 @@ package com.assesment.lottofun.entity;
 
 import com.assesment.lottofun.exception.BusinessException;
 import com.assesment.lottofun.infrastructure.configuration.PrizeRules;
-import com.assesment.lottofun.util.DrawUtil;
+import com.assesment.lottofun.util.NumberUtils;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -95,8 +95,8 @@ public class Ticket {
     }
 
     private int getMatchCount(String winningNumbers) {
-        Set<Integer> winningNumbersSet = DrawUtil.stringToNumbers(winningNumbers);
-        Set<Integer> selectedNumbersSet = DrawUtil.stringToNumbers(selectedNumbers);
+        Set<Integer> winningNumbersSet = NumberUtils.stringToNumbers(winningNumbers);
+        Set<Integer> selectedNumbersSet = NumberUtils.stringToNumbers(selectedNumbers);
         selectedNumbersSet.retainAll(winningNumbersSet);
         return selectedNumbersSet.size();
     }
@@ -109,7 +109,7 @@ public class Ticket {
             BigDecimal purchasePrice
     ) {
         Ticket ticket = new Ticket();
-        ticket.selectedNumbers = DrawUtil.numbersToString(selectedNumbers);
+        ticket.selectedNumbers = NumberUtils.numbersToString(selectedNumbers);
         ticket.purchasePrice = purchasePrice;
         ticket.status = TicketStatus.WAITING_FOR_DRAW;
         ticket.draw = draw;

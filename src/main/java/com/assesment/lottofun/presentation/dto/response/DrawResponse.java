@@ -1,7 +1,7 @@
 package com.assesment.lottofun.presentation.dto.response;
 
 import com.assesment.lottofun.entity.Draw;
-import com.assesment.lottofun.util.DrawUtil;
+import com.assesment.lottofun.util.NumberUtils;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -27,7 +27,7 @@ public class DrawResponse {
         response.setCreatedAt(draw.getCreatedAt());
 
         if (draw.getWinningNumbers() != null && !draw.getWinningNumbers().isBlank()) {
-            response.setWinningNumbers(DrawUtil.stringToNumbersList(draw.getWinningNumbers()));
+            response.setWinningNumbers(NumberUtils.stringToNumbersList(draw.getWinningNumbers()));
         }
 
         return response;

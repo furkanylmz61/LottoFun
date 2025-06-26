@@ -1,10 +1,7 @@
 package com.assesment.lottofun.entity;
 
-import com.assesment.lottofun.util.DrawUtil;
-import com.assesment.lottofun.util.LotteryUtils;
+import com.assesment.lottofun.util.NumberUtils;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -73,7 +70,7 @@ public class User {
     }
 
     public boolean hasTicketAlready(Long drawId, Set<Integer> selectedNumbers) {
-        String sortedNumbers = DrawUtil.numbersToString(selectedNumbers);
+        String sortedNumbers = NumberUtils.numbersToString(selectedNumbers);
 
         return tickets.stream()
                 .anyMatch(ticket -> ticket.getDraw().getId().equals(drawId) &&
