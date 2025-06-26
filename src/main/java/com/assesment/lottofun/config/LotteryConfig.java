@@ -26,6 +26,7 @@ public class LotteryConfig {
     @Data
     public static class Draw {
         private Integer frequencyMinutes = 1;
+        private Integer processingBatchSize = 1000;
     }
 
     @Data

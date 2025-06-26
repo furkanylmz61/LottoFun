@@ -46,10 +46,7 @@ public class DrawService {
         LocalDateTime scheduledDate = LocalDateTime.now()
                 .plusMinutes(lotteryConfig.getDraw().getFrequencyMinutes());
 
-        Draw newDraw = Draw.builder() // TODO new draw yap
-                .drawDate(scheduledDate)
-                .status(DrawStatus.DRAW_OPEN)
-                .build();
+        Draw newDraw = Draw.createNew(scheduledDate);
 
         return drawRepository.save(newDraw);
     }
@@ -72,7 +69,7 @@ public class DrawService {
     }
 
     private void processTickets(Draw draw) {
-        int batchSize = 1000; // TODO configden al
+        int batchSize = lotteryConfig.getDraw().getProcessingBatchSize();
         Page<Ticket> ticketPage;
 
         do {

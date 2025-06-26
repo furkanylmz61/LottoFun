@@ -45,11 +45,12 @@ lottery:
     max-number: 49
   draw:
     frequencyMinutes: 3
+    processingBatchSize: 1000
   prizes:
-    jackpot-percentage: 50
-    high-percentage: 25
-    medium-percentage: 15
-    low-percentage: 10
+    jackpot: 1000000.00
+    high: 1000.00
+    medium: 100.00
+    low: 10.00
 
 # Logging
 logging:

@@ -81,6 +81,12 @@ public class Draw {
         this.status = DrawStatus.DRAW_FINALIZED;
         this.prizesDistributedAt = LocalDateTime.now();
     }
+    public static Draw createNew(LocalDateTime scheduledDate) {
+        Draw draw = new Draw();
+        draw.drawDate = scheduledDate;
+        draw.status = DrawStatus.DRAW_OPEN;
+        return draw;
+    }
 
     public boolean isEligibleForProcess() {
         return this.status == DrawStatus.DRAW_OPEN;
