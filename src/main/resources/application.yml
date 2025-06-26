@@ -33,8 +33,8 @@ server:
 # JWT Configuration
 app:
   jwt:
-    secret: ${JWT_SECRET}
-    expiration: ${JWT_EXPIRATION}
+    secret: gScDvt7yDTlvKueKmH9CQU4r15EPMuLm5pyyGUhz9QzcpSO6Y8MZ6CzX8d45TwLsJkyEoDCbalxHxwXyXlysaA
+    expiration: 1800000
 
 # Lottery Configuration
 lottery:
