@@ -1,5 +1,6 @@
 package com.assesment.lottofun.entity;
 
+import com.assesment.lottofun.exception.BusinessException;
 import com.assesment.lottofun.infrastructure.configuration.PrizeRules;
 import com.assesment.lottofun.util.DrawUtil;
 import jakarta.persistence.*;
@@ -75,7 +76,7 @@ public class Ticket {
 
     public void setAsClaimed() {
         if (!isClaimable()) {
-            throw new IllegalStateException("Only winning tickets can be claimed");
+            throw new BusinessException("Only winning tickets can be claimed");
         }
         this.status = TicketStatus.PRIZE_CLAIMED;
     }
