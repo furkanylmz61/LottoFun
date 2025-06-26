@@ -7,8 +7,7 @@ import com.assesment.lottofun.controller.response.UserProfileResponse;
 import com.assesment.lottofun.entity.Ticket;
 import com.assesment.lottofun.entity.User;
 import com.assesment.lottofun.exception.ResourceNotFoundException;
-import com.assesment.lottofun.repository.TicketRepository;
-import com.assesment.lottofun.repository.UserRepository;
+import com.assesment.lottofun.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,7 +49,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public PageResponse<TicketDetailResponse> userAllTickets(String userEmail, Pageable pageable) {
-        User user = userRepository.findByEmailWithTickets(userEmail)
+        User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + userEmail));
 
         List<Ticket> allTickets = user.getAllTicketsSortedByDate();
@@ -78,7 +76,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public List<TicketDetailResponse> winningTickets(String userEmail) {
-        User user = userRepository.findByEmailWithTickets(userEmail)
+        User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + userEmail));
 
         List<Ticket> winningTickets = user.getWinningTickets();
@@ -90,7 +88,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public List<TicketDetailResponse> claimableTickets(String userEmail) {
-        User user = userRepository.findByEmailWithTickets(userEmail)
+        User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + userEmail));
 
         List<Ticket> claimableTickets = user.getClaimableTickets();
@@ -102,28 +100,24 @@ public class UserService {
 
     @Transactional
     public ClaimTicketResponse claimTicket(String userEmail, Long ticketId) {
-        User user = userRepository.findByEmailWithTickets(userEmail)
+        User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + userEmail));
 
         Ticket ticket = user.getTicketById(ticketId);
+
         if (ticket == null) {
-            throw new ResourceNotFoundException("Ticket not found or doesn't belong to user");
+            throw new IllegalArgumentException("Ticket not found for user");
         }
 
-        BigDecimal claimedAmount = ticket.getPrizeAmount();
-        String ticketNumber = ticket.getTicketNumber();
-
-        user.claimTicket(ticketId);
-
+        user.claimTicket(ticket);
         userRepository.save(user);
 
-        log.info("User {} claimed ticket {} for amount {}", userEmail, ticketId, claimedAmount);
+        log.info("User {} claimed ticket {} for amount {}", userEmail, ticketId);
 
         return ClaimTicketResponse.create(
                 ticketId,
-                ticketNumber,
-                claimedAmount,
-                ticket.getClaimedAt(),
+                ticket.getTicketNumber(),
+                ticket.getPrizeAmount(),
                 user.getBalance()
         );
     }

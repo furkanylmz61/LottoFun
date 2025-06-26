@@ -30,9 +30,10 @@ public class LotteryConfig {
 
     @Data
     public static class Prizes {
-        private Integer jackpotPercentage = 50;
-        private Integer highPercentage = 25;
-        private Integer mediumPercentage = 15;
-        private Integer lowPercentage = 10;
+        private BigDecimal jackpot = BigDecimal.valueOf(1000000.00);
+        private BigDecimal high = BigDecimal.valueOf(1000.00);
+        private BigDecimal medium = BigDecimal.valueOf(100.00);
+        private BigDecimal low = BigDecimal.valueOf(10.00);
     }
+
 }

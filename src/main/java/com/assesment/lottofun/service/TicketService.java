@@ -9,7 +9,7 @@ import com.assesment.lottofun.entity.Ticket;
 import com.assesment.lottofun.entity.User;
 import com.assesment.lottofun.exception.BusinessException;
 import com.assesment.lottofun.exception.ResourceNotFoundException;
-import com.assesment.lottofun.repository.TicketRepository;
+import com.assesment.lottofun.infrastructure.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +28,7 @@ public class TicketService {
 
     @Transactional
     public TicketBasicResponse purchase(String userEmail, TicketPurchaseRequest request) {
-        Draw activeDraw = drawService.activeDraw();
+        Draw activeDraw = drawService.getActiveDraw();
 
         if (!activeDraw.canAcceptTickets()) {
             throw new BusinessException("The current active draw is no longer accepting tickets");
@@ -51,7 +51,6 @@ public class TicketService {
         );
 
         Ticket saved = ticketRepository.save(ticket);
-        activeDraw.registerTicket(ticketPrice);
         drawService.save(activeDraw);
 
         return TicketBasicResponse.fromEntity(saved);

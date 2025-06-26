@@ -27,7 +27,7 @@ public class ScheduleService {
 
     private Draw findOrCreateActiveDraw() {
         try {
-            return drawService.activeDraw();
+            return drawService.getActiveDraw();
         } catch (ResourceNotFoundException ex) {
             return drawService.newDraw();
         } catch (Exception ex) {

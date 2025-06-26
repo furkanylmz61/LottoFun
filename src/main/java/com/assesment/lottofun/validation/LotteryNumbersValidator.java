@@ -30,7 +30,7 @@ public class LotteryNumbersValidator implements ConstraintValidator<ValidLottery
             String userEmail = getCurrentUserEmail();
             if (userEmail != null) {
                 User user = userService.getUserByEmail(userEmail);
-                Long activeDrawId = drawService.activeDraw().getId();
+                Long activeDrawId = drawService.getActiveDraw().getId();
 
                 if (user.hasTicketAlready(activeDrawId, value)) {
                     context.disableDefaultConstraintViolation();

@@ -1,4 +1,4 @@
-package com.assesment.lottofun.repository;
+package com.assesment.lottofun.infrastructure.repository;
 
 import com.assesment.lottofun.entity.Ticket;
 import com.assesment.lottofun.entity.TicketStatus;

@@ -22,10 +22,7 @@ public class TicketDetailResponse {
     private String drawStatus;
     private List<Integer> winningNumbers;
     private Integer matchCount;
-    private String matchedNumbers;
     private BigDecimal prizeAmount;
-    private LocalDateTime claimedAt;
-    private String prizeType;
 
     public static TicketDetailResponse fromEntity(Ticket ticket) {
         TicketDetailResponse response = new TicketDetailResponse();
@@ -37,10 +34,7 @@ public class TicketDetailResponse {
         response.setTicketStatus(ticket.getStatus().name());
         response.setDrawId(ticket.getDraw().getId());
         response.setMatchCount(ticket.getMatchCount());
-        response.setMatchedNumbers(ticket.getMatchedNumbers());
         response.setPrizeAmount(ticket.getPrizeAmount());
-        response.setPrizeType(LotteryUtils.getPrizeTier(ticket.getMatchCount()));
-        response.setClaimedAt(ticket.getClaimedAt());
 
         if (ticket.getDraw() != null) {
             var draw = ticket.getDraw();

@@ -1,7 +1,7 @@
 package com.assesment.lottofun.service;
 
 import com.assesment.lottofun.entity.User;
-import com.assesment.lottofun.repository.UserRepository;
+import com.assesment.lottofun.infrastructure.repository.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

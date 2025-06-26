@@ -5,10 +5,8 @@ import com.assesment.lottofun.controller.response.DrawResponse;
 import com.assesment.lottofun.controller.response.PageResponse;
 import com.assesment.lottofun.service.DrawService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,13 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/draw")
 @RestController
 @SecurityRequirement(name = "JWT")
+@RequiredArgsConstructor
 public class DrawController {
 
-    private final DrawService _drawService;
+    private final DrawService drawService;
 
-    public DrawController(DrawService drawService) {
-        _drawService = drawService;
-    }
 
     @GetMapping("/active")
     @Operation(
@@ -32,8 +28,8 @@ public class DrawController {
             description = "Retrieves information about the current active draw that accepts ticket purchases"
     )
     public ResponseEntity<ApiResponse<DrawResponse>> getCurrentDraw() {
-        DrawResponse currentDraw = _drawService.currentActiveDraw();
-        return ResponseEntity.ok(ApiResponse.success("Current draw retrieved successfully", currentDraw));
+        return ResponseEntity.ok(ApiResponse.success("Current draw retrieved successfully",
+                DrawResponse.fromEntity(drawService.getActiveDraw())));
     }
 
 
@@ -43,16 +39,15 @@ public class DrawController {
             description = "Retrieves paginated list of completed draws with results"
     )
     public ResponseEntity<ApiResponse<PageResponse<DrawResponse>>> getDrawHistory(
-            @Parameter(description = "Page number (0-based)") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "Page size") @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "desc") String direction) {
 
 
-        Pageable pageable = PageRequest.of(page, size);
-        PageResponse<DrawResponse> drawHistory = _drawService.completedDraw(pageable);
+        PageResponse<DrawResponse> drawHistory = drawService.filter(page, size, direction);
 
         return ResponseEntity.ok(ApiResponse.success("Draw history retrieved successfully", drawHistory));
     }
-
 
 
 }
