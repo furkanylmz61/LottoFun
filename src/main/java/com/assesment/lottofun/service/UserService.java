@@ -1,9 +1,9 @@
 package com.assesment.lottofun.service;
 
-import com.assesment.lottofun.controller.response.ClaimTicketResponse;
-import com.assesment.lottofun.controller.response.PageResponse;
-import com.assesment.lottofun.controller.response.TicketDetailResponse;
-import com.assesment.lottofun.controller.response.UserProfileResponse;
+import com.assesment.lottofun.presentation.dto.response.ClaimTicketResponse;
+import com.assesment.lottofun.presentation.dto.common.PageResponse;
+import com.assesment.lottofun.presentation.dto.response.TicketDetailResponse;
+import com.assesment.lottofun.presentation.dto.response.UserProfileResponse;
 import com.assesment.lottofun.entity.Ticket;
 import com.assesment.lottofun.entity.User;
 import com.assesment.lottofun.exception.ResourceNotFoundException;

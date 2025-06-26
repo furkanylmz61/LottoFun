@@ -1,9 +1,9 @@
-package com.assesment.lottofun.controller;
+package com.assesment.lottofun.presentation.controller;
 
-import com.assesment.lottofun.controller.request.AuthRequest;
-import com.assesment.lottofun.controller.request.RegisterRequest;
-import com.assesment.lottofun.controller.response.ApiResponse;
-import com.assesment.lottofun.controller.response.AuthResponse;
+import com.assesment.lottofun.presentation.dto.request.AuthRequest;
+import com.assesment.lottofun.presentation.dto.request.RegisterRequest;
+import com.assesment.lottofun.presentation.dto.common.ApiResponse;
+import com.assesment.lottofun.presentation.dto.response.AuthResponse;
 import com.assesment.lottofun.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

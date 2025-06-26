@@ -1,12 +1,12 @@
 package com.assesment.lottofun.service;
 
-import com.assesment.lottofun.controller.request.AuthRequest;
-import com.assesment.lottofun.controller.request.RegisterRequest;
-import com.assesment.lottofun.controller.response.AuthResponse;
+import com.assesment.lottofun.presentation.dto.request.AuthRequest;
+import com.assesment.lottofun.presentation.dto.request.RegisterRequest;
+import com.assesment.lottofun.presentation.dto.response.AuthResponse;
 import com.assesment.lottofun.entity.User;
 import com.assesment.lottofun.exception.BusinessException;
 import com.assesment.lottofun.infrastructure.repository.UserRepository;
-import com.assesment.lottofun.security.JwtService;
+import com.assesment.lottofun.infrastructure.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;

@@ -1,4 +1,4 @@
-package com.assesment.lottofun.security;
+package com.assesment.lottofun.infrastructure.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;

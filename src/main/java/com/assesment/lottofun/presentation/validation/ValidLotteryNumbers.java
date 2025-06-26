@@ -1,4 +1,4 @@
-package com.assesment.lottofun.validation;
+package com.assesment.lottofun.presentation.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

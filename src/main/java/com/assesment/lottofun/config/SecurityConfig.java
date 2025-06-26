@@ -1,8 +1,8 @@
 package com.assesment.lottofun.config;
 
-import com.assesment.lottofun.security.CustomUserDetailsService;
-import com.assesment.lottofun.security.JwtAuthenticationEntryPoint;
-import com.assesment.lottofun.security.JwtAuthenticationFilter;
+import com.assesment.lottofun.infrastructure.security.CustomUserDetailsService;
+import com.assesment.lottofun.infrastructure.security.JwtAuthenticationEntryPoint;
+import com.assesment.lottofun.infrastructure.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

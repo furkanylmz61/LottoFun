@@ -15,9 +15,4 @@ public interface DrawRepository extends JpaRepository<Draw, Long> {
 
     Optional<Draw> findFirstByStatusOrderByDrawDateAsc(DrawStatus status);
 
-    List<Draw> findByStatusAndDrawDateBefore(DrawStatus status, LocalDateTime dateTime);
-
-    @Query("SELECT d FROM Draw d WHERE d.status = :status ORDER BY d.drawDate ASC")
-    Optional<Draw> findNextActiveDrawByStatus(DrawStatus status);
-
 }

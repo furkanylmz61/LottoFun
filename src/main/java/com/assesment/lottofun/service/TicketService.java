@@ -1,15 +1,15 @@
 package com.assesment.lottofun.service;
 
-import com.assesment.lottofun.config.LotteryConfig;
-import com.assesment.lottofun.controller.request.TicketPurchaseRequest;
-import com.assesment.lottofun.controller.response.TicketBasicResponse;
-import com.assesment.lottofun.controller.response.TicketDetailResponse;
+import com.assesment.lottofun.config.PrizeRulesConfig;
 import com.assesment.lottofun.entity.Draw;
 import com.assesment.lottofun.entity.Ticket;
 import com.assesment.lottofun.entity.User;
 import com.assesment.lottofun.exception.BusinessException;
 import com.assesment.lottofun.exception.ResourceNotFoundException;
 import com.assesment.lottofun.infrastructure.repository.TicketRepository;
+import com.assesment.lottofun.presentation.dto.request.TicketPurchaseRequest;
+import com.assesment.lottofun.presentation.dto.response.TicketBasicResponse;
+import com.assesment.lottofun.presentation.dto.response.TicketDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +24,7 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final DrawService drawService;
     private final UserService userService;
-    private final LotteryConfig lotteryConfig;
+    private final PrizeRulesConfig prizeRulesConfig;
 
     @Transactional
     public TicketBasicResponse purchase(String userEmail, TicketPurchaseRequest request) {
@@ -35,7 +35,7 @@ public class TicketService {
         }
 
         User user = userService.getUserByEmail(userEmail);
-        BigDecimal ticketPrice = lotteryConfig.getTicket().getPrice();
+        BigDecimal ticketPrice = prizeRulesConfig.getTicket().getPrice();
 
 
         user.deductBalance(ticketPrice);

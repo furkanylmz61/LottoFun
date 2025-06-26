@@ -1,8 +1,8 @@
-package com.assesment.lottofun.controller;
+package com.assesment.lottofun.presentation.controller;
 
-import com.assesment.lottofun.controller.response.ApiResponse;
-import com.assesment.lottofun.controller.response.DrawResponse;
-import com.assesment.lottofun.controller.response.PageResponse;
+import com.assesment.lottofun.presentation.dto.common.ApiResponse;
+import com.assesment.lottofun.presentation.dto.response.DrawResponse;
+import com.assesment.lottofun.presentation.dto.common.PageResponse;
 import com.assesment.lottofun.service.DrawService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

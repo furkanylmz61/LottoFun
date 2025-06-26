@@ -1,6 +1,6 @@
-package com.assesment.lottofun.security;
+package com.assesment.lottofun.infrastructure.security;
 
-import com.assesment.lottofun.controller.response.ErrorResponse;
+import com.assesment.lottofun.presentation.dto.common.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

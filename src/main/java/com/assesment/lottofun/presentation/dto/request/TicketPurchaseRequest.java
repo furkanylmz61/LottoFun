@@ -1,6 +1,6 @@
-package com.assesment.lottofun.controller.request;
+package com.assesment.lottofun.presentation.dto.request;
 
-import com.assesment.lottofun.validation.ValidLotteryNumbers;
+import com.assesment.lottofun.presentation.validation.ValidLotteryNumbers;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;

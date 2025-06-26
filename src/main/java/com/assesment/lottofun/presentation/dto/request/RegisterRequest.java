@@ -1,4 +1,4 @@
-package com.assesment.lottofun.controller.request;
+package com.assesment.lottofun.presentation.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

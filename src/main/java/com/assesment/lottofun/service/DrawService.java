@@ -1,8 +1,6 @@
 package com.assesment.lottofun.service;
 
-import com.assesment.lottofun.config.LotteryConfig;
-import com.assesment.lottofun.controller.response.DrawResponse;
-import com.assesment.lottofun.controller.response.PageResponse;
+import com.assesment.lottofun.config.PrizeRulesConfig;
 import com.assesment.lottofun.entity.Draw;
 import com.assesment.lottofun.entity.DrawStatus;
 import com.assesment.lottofun.entity.Ticket;
@@ -10,6 +8,8 @@ import com.assesment.lottofun.entity.TicketStatus;
 import com.assesment.lottofun.exception.ResourceNotFoundException;
 import com.assesment.lottofun.infrastructure.repository.DrawRepository;
 import com.assesment.lottofun.infrastructure.repository.TicketRepository;
+import com.assesment.lottofun.presentation.dto.common.PageResponse;
+import com.assesment.lottofun.presentation.dto.response.DrawResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +26,7 @@ import java.util.List;
 public class DrawService {
 
     private final DrawRepository drawRepository;
-    private final LotteryConfig lotteryConfig;
+    private final PrizeRulesConfig prizeRulesConfig;
     private final TicketRepository ticketRepository;
 
     @Transactional(readOnly = true)
@@ -44,7 +44,7 @@ public class DrawService {
                 });
 
         LocalDateTime scheduledDate = LocalDateTime.now()
-                .plusMinutes(lotteryConfig.getDraw().getFrequencyMinutes());
+                .plusMinutes(prizeRulesConfig.getDraw().getFrequencyMinutes());
 
         Draw newDraw = Draw.createNew(scheduledDate);
 
@@ -69,7 +69,7 @@ public class DrawService {
     }
 
     private void processTickets(Draw draw) {
-        int batchSize = lotteryConfig.getDraw().getProcessingBatchSize();
+        int batchSize = prizeRulesConfig.getDraw().getProcessingBatchSize();
         Page<Ticket> ticketPage;
 
         do {

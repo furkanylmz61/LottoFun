@@ -1,10 +1,10 @@
-package com.assesment.lottofun.controller;
+package com.assesment.lottofun.presentation.controller;
 
-import com.assesment.lottofun.controller.response.ApiResponse;
-import com.assesment.lottofun.controller.response.ClaimTicketResponse;
-import com.assesment.lottofun.controller.response.PageResponse;
-import com.assesment.lottofun.controller.response.TicketDetailResponse;
-import com.assesment.lottofun.controller.response.UserProfileResponse;
+import com.assesment.lottofun.presentation.dto.common.ApiResponse;
+import com.assesment.lottofun.presentation.dto.response.ClaimTicketResponse;
+import com.assesment.lottofun.presentation.dto.common.PageResponse;
+import com.assesment.lottofun.presentation.dto.response.TicketDetailResponse;
+import com.assesment.lottofun.presentation.dto.response.UserProfileResponse;
 import com.assesment.lottofun.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

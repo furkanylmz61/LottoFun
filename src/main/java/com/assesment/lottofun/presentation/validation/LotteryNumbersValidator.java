@@ -1,4 +1,4 @@
-package com.assesment.lottofun.validation;
+package com.assesment.lottofun.presentation.validation;
 
 import com.assesment.lottofun.entity.User;
 import com.assesment.lottofun.service.DrawService;

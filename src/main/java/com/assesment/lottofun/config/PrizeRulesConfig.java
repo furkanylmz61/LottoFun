@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Data
 @Component
 @ConfigurationProperties(prefix = "lottery")
-public class LotteryConfig {
+public class PrizeRulesConfig {
 
     private Ticket ticket = new Ticket();
     private Draw draw = new Draw();

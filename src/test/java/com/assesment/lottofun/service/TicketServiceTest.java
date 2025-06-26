@@ -1,9 +1,9 @@
 package com.assesment.lottofun.service;
 
 import com.assesment.lottofun.config.LotteryConfig;
-import com.assesment.lottofun.controller.request.TicketPurchaseRequest;
-import com.assesment.lottofun.controller.response.TicketBasicResponse;
-import com.assesment.lottofun.controller.response.TicketDetailResponse;
+import com.assesment.lottofun.presentation.dto.request.TicketPurchaseRequest;
+import com.assesment.lottofun.presentation.dto.response.TicketBasicResponse;
+import com.assesment.lottofun.presentation.dto.response.TicketDetailResponse;
 import com.assesment.lottofun.entity.*;
 import com.assesment.lottofun.exception.BusinessException;
 import com.assesment.lottofun.infrastructure.repository.TicketRepository;

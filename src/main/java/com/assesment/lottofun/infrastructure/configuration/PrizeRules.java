@@ -1,6 +1,6 @@
 package com.assesment.lottofun.infrastructure.configuration;
 
-import com.assesment.lottofun.config.LotteryConfig;
+import com.assesment.lottofun.config.PrizeRulesConfig;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -12,11 +12,11 @@ public class PrizeRules {
     private static Map<Integer, BigDecimal> staticPrizeMap;
 
 
-    public PrizeRules(LotteryConfig lotteryConfig) {
-        initStaticMap(lotteryConfig.getPrizes());
+    public PrizeRules(PrizeRulesConfig prizeRulesConfig) {
+        initStaticMap(prizeRulesConfig.getPrizes());
     }
 
-    private void initStaticMap(LotteryConfig.Prizes prizes) {
+    private void initStaticMap(PrizeRulesConfig.Prizes prizes) {
         staticPrizeMap = Map.of(
                 5, prizes.getJackpot(),
                 4, prizes.getHigh(),

@@ -1,4 +1,4 @@
-package com.assesment.lottofun.security;
+package com.assesment.lottofun.infrastructure.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

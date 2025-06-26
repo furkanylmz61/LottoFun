@@ -1,4 +1,4 @@
-package com.assesment.lottofun.controller.response;
+package com.assesment.lottofun.presentation.dto.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

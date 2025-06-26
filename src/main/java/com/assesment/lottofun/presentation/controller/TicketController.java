@@ -1,9 +1,9 @@
-package com.assesment.lottofun.controller;
+package com.assesment.lottofun.presentation.controller;
 
-import com.assesment.lottofun.controller.request.TicketPurchaseRequest;
-import com.assesment.lottofun.controller.response.ApiResponse;
-import com.assesment.lottofun.controller.response.TicketBasicResponse;
-import com.assesment.lottofun.controller.response.TicketDetailResponse;
+import com.assesment.lottofun.presentation.dto.request.TicketPurchaseRequest;
+import com.assesment.lottofun.presentation.dto.common.ApiResponse;
+import com.assesment.lottofun.presentation.dto.response.TicketBasicResponse;
+import com.assesment.lottofun.presentation.dto.response.TicketDetailResponse;
 import com.assesment.lottofun.service.TicketService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

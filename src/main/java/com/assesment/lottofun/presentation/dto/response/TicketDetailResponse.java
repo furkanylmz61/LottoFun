@@ -1,8 +1,7 @@
-package com.assesment.lottofun.controller.response;
+package com.assesment.lottofun.presentation.dto.response;
 
 import com.assesment.lottofun.entity.Ticket;
 import com.assesment.lottofun.util.DrawUtil;
-import com.assesment.lottofun.util.LotteryUtils;
 import lombok.Data;
 
 import java.math.BigDecimal;
