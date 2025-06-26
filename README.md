@@ -5,6 +5,7 @@ A comprehensive lottery management system built with Spring Boot that provides a
 ## 🌐 Live Server
 - **API Base URL:** `http://94.154.34.200:8080`
 - **Swagger Documentation:** [http://94.154.34.200:8080/swagger-ui/index.html](http://94.154.34.200:8080/swagger-ui/index.html)
+- **Postman Collection:** [Click to Import Collection](https://www.postman.com/lunar-module-participant-79955904/workspace/lottofun/collection/40644370-2c3eea32-26a1-4925-a171-7c3ccbb92139?action=share&creator=40644370)
 
 ## 🚀 Features
 
@@ -289,4 +290,10 @@ ENTRYPOINT ["java", "-jar", "/app.jar"]
    - Check system time synchronization
    - Verify `@EnableScheduling` annotation
    - Monitor application logs for scheduled tasks
+
+## 📝 API Testing Guide
+1. Import the Postman Collection using the link above
+2. Register a new user using the "Register User" endpoint
+3. Login with your credentials using the "Login" endpoint (JWT token will be automatically saved)
+4. Start using other endpoints with the saved authentication token
 
