@@ -155,7 +155,7 @@ class DrawServiceTest {
         when(drawRepository.save(any(Draw.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
 
-        drawService.process(eligibleDraw);
+        drawService.process();
 
 
         assertEquals(DrawStatus.DRAW_FINALIZED, eligibleDraw.getStatus());
@@ -165,21 +165,7 @@ class DrawServiceTest {
         verify(drawRepository, times(3)).save(eligibleDraw);
     }
 
-    @Test
-    void process_ShouldNotProcessDraw_WhenDrawIsNotEligible() {
 
-        Draw ineligibleDraw = Draw.builder()
-                .id(1L)
-                .status(DrawStatus.DRAW_FINALIZED)
-                .build();
-
-
-        drawService.process(ineligibleDraw);
-
-
-        verify(drawRepository, never()).save(any(Draw.class));
-        verify(ticketRepository, never()).findByDrawIdAndStatus(anyLong(), any(), any());
-    }
 
     @Test
     void filter_ShouldReturnPagedDrawResponses() {

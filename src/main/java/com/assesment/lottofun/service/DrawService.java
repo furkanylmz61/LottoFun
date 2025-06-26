@@ -18,7 +18,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,9 +31,7 @@ public class DrawService {
 
     @Transactional(readOnly = true)
     public Draw getActiveDraw() {
-        return drawRepository.findFirstByStatusOrderByDrawDateAsc(DrawStatus.DRAW_OPEN)
-                .filter(draw -> draw.getDrawDate().isAfter(LocalDateTime.now()))
-                .orElseThrow(() -> new ResourceNotFoundException("No active draw available"));
+        return getActive();
     }
 
     @Transactional
@@ -44,11 +41,16 @@ public class DrawService {
                     throw new IllegalStateException("Active draw already exists: " + activeDraw.getId());
                 });
 
+        Draw newDraw = createNewDraw();
+
+        return drawRepository.save(newDraw);
+    }
+
+    private Draw createNewDraw() {
         LocalDateTime scheduledDate = LocalDateTime.now()
                 .plusMinutes(prizeRulesConfig.getDraw().getFrequencyMinutes());
 
         Draw newDraw = Draw.createNew(scheduledDate);
-
         return drawRepository.save(newDraw);
     }
 
@@ -66,8 +68,21 @@ public class DrawService {
         processTickets(draw);
 
         draw.setAsFinalized();
+
         drawRepository.save(draw);
     }
+
+    private Draw getActive() {
+        return drawRepository.findFirstByStatusOrderByDrawDateAsc(DrawStatus.DRAW_OPEN)
+                .orElseThrow(() -> new ResourceNotFoundException("No active draw available"));
+    }
+
+    @Transactional
+    public Draw getLockDraw() {
+        return drawRepository.getLockDraw(DrawStatus.DRAW_OPEN)
+                .orElseThrow(() -> new ResourceNotFoundException("No active draw available"));
+    }
+
 
     private void processTickets(Draw draw) {
         int batchSize = prizeRulesConfig.getDraw().getProcessingBatchSize();

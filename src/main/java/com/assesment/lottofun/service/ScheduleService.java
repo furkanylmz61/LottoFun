@@ -7,6 +7,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -44,20 +45,15 @@ public class ScheduleService {
         }
 
 
-        taskScheduler.schedule(() -> executeDrawAndScheduleNew(draw),
+        taskScheduler.schedule(() -> executeDrawAndScheduleNew(),
                 new Date(System.currentTimeMillis() + delayMs));
     }
 
-    private void executeDrawAndScheduleNew(Draw draw) {
-        try {
-            drawService.process(draw);
-
-        } catch (Exception ex) {
-        }
-        try {
-            Draw nextDraw = drawService.newDraw();
-            scheduleDrawExecution(nextDraw);
-        } catch (Exception ex) {
-        }
+    @Transactional
+    void executeDrawAndScheduleNew() {
+        Draw lockDraw = drawService.getLockDraw();
+        drawService.process(lockDraw);
+        Draw nextDraw = drawService.newDraw();
+        scheduleDrawExecution(nextDraw);
     }
 }
