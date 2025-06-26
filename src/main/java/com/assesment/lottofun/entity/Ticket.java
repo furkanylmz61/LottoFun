@@ -20,7 +20,7 @@ import java.util.UUID;
 @Table(name = "tickets",
         uniqueConstraints = @UniqueConstraint(
                 name = "uk_user_draw_numbers",
-                columnNames = {"user_id", "draw_id", "selected_numbers_hash"}
+                columnNames = {"user_id", "draw_id", "selected_numbers"}
         ))
 @AllArgsConstructor
 @NoArgsConstructor

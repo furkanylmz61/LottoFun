@@ -21,7 +21,6 @@ public class LotteryNumbersValidator implements ConstraintValidator<ValidLottery
         this.drawService = drawService;
     }
 
-
     @Override
     public boolean isValid(Set<Integer> value, ConstraintValidatorContext context) {
         try {
