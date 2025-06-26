@@ -6,7 +6,7 @@ import com.assesment.lottofun.controller.response.TicketBasicResponse;
 import com.assesment.lottofun.controller.response.TicketDetailResponse;
 import com.assesment.lottofun.entity.*;
 import com.assesment.lottofun.exception.BusinessException;
-import com.assesment.lottofun.repository.TicketRepository;
+import com.assesment.lottofun.infrastructure.repository.TicketRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -51,7 +51,7 @@ class TicketServiceTest {
 
         User user = mock(User.class);
         Draw draw = mock(Draw.class);
-        when(drawService.activeDraw()).thenReturn(draw);
+        when(drawService.getActiveDraw()).thenReturn(draw);
         when(draw.canAcceptTickets()).thenReturn(true);
         when(userService.getUserByEmail(email)).thenReturn(user);
 
@@ -77,8 +77,8 @@ class TicketServiceTest {
 
     @Test
     void testPurchase_drawClosed_throwsBusinessException() {
-        when(drawService.activeDraw()).thenReturn(mock(Draw.class));
-        when(drawService.activeDraw().canAcceptTickets()).thenReturn(false);
+        when(drawService.getActiveDraw()).thenReturn(mock(Draw.class));
+        when(drawService.getActiveDraw().canAcceptTickets()).thenReturn(false);
 
         TicketPurchaseRequest request = new TicketPurchaseRequest();
         request.setSelectedNumbers(Set.of(1,2,3,4,5));

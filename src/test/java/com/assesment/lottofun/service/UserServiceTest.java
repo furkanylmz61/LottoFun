@@ -4,7 +4,7 @@ import com.assesment.lottofun.controller.response.PageResponse;
 import com.assesment.lottofun.controller.response.TicketDetailResponse;
 import com.assesment.lottofun.entity.*;
 import com.assesment.lottofun.exception.ResourceNotFoundException;
-import com.assesment.lottofun.repository.UserRepository;
+import com.assesment.lottofun.infrastructure.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -107,7 +107,7 @@ class UserServiceTest {
         Long ticketId = 10L;
 
         User user = mock(User.class);
-        when(userRepository.findByEmailWithTickets(email)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
         assertThrows(ResourceNotFoundException.class, () -> {
             userService.claimTicket(email, ticketId);
@@ -132,7 +132,7 @@ class UserServiceTest {
         doReturn(ticket).when(user).getTicketById(ticketId);
         doThrow(new IllegalStateException("Ticket is not claimable")).when(user).claimTicket(ticketId);
 
-        when(userRepository.findByEmailWithTickets(email)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
         assertThrows(IllegalStateException.class, () -> {
             userService.claimTicket(email, ticketId);
