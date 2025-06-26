@@ -1,4 +1,4 @@
-package com.assesment.lottofun.service;
+package com.assesment.lottofun.security;
 
 import com.assesment.lottofun.entity.User;
 import com.assesment.lottofun.infrastructure.repository.UserRepository;

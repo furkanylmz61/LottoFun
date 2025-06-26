@@ -1,8 +1,8 @@
 package com.assesment.lottofun.config;
 
+import com.assesment.lottofun.security.CustomUserDetailsService;
 import com.assesment.lottofun.security.JwtAuthenticationEntryPoint;
 import com.assesment.lottofun.security.JwtAuthenticationFilter;
-import com.assesment.lottofun.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +29,6 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomUserDetailsService userDetailsService;
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
