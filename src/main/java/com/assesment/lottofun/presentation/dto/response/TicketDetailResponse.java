@@ -16,6 +16,7 @@ public class TicketDetailResponse {
     private BigDecimal purchasePrice;
     private LocalDateTime purchaseTimestamp;
     private String ticketStatus;
+    private BigDecimal totalPrizePool;
     private Long drawId;
     private LocalDateTime drawDate;
     private String drawStatus;
@@ -39,6 +40,7 @@ public class TicketDetailResponse {
             var draw = ticket.getDraw();
             response.setDrawDate(draw.getDrawDate());
             response.setDrawStatus(draw.getStatus().name());
+            response.setTotalPrizePool(draw.getTotalPrizePool());
             response.setWinningNumbers(draw.getWinningNumbers() != null ?
                     NumberUtils.stringToNumbersList(draw.getWinningNumbers()) : null);
         }

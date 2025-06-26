@@ -4,6 +4,7 @@ import com.assesment.lottofun.entity.Draw;
 import com.assesment.lottofun.util.NumberUtils;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -13,6 +14,7 @@ public class DrawResponse {
     private LocalDateTime drawDate;
     private String status;
     private List<Integer> winningNumbers;
+    private BigDecimal totalPrizePool;
     private LocalDateTime executedAt;
     private LocalDateTime prizesDistributedAt;
     private LocalDateTime createdAt;
@@ -22,6 +24,7 @@ public class DrawResponse {
         response.setId(draw.getId());
         response.setDrawDate(draw.getDrawDate());
         response.setStatus(draw.getStatus().name());
+        response.setTotalPrizePool(draw.getTotalPrizePool());
         response.setExecutedAt(draw.getExecutedAt());
         response.setPrizesDistributedAt(draw.getPrizesDistributedAt());
         response.setCreatedAt(draw.getCreatedAt());

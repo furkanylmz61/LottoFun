@@ -85,6 +85,7 @@ public class Draw {
         Draw draw = new Draw();
         draw.drawDate = scheduledDate;
         draw.status = DrawStatus.DRAW_OPEN;
+        draw.totalPrizePool =  BigDecimal.valueOf(10_000_000.00);
         return draw;
     }
 
