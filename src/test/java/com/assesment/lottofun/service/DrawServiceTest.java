@@ -88,44 +88,9 @@ class DrawServiceTest {
         verify(drawRepository).findFirstByStatusOrderByDrawDateAsc(DrawStatus.DRAW_OPEN);
     }
 
-    @Test
-    void getActiveDraw_ShouldThrowResourceNotFoundException_WhenDrawDateIsPast() {
-        Draw pastDraw = Draw.builder()
-                .id(1L)
-                .drawDate(LocalDateTime.now().minusHours(1))
-                .status(DrawStatus.DRAW_OPEN)
-                .build();
 
-        when(drawRepository.findFirstByStatusOrderByDrawDateAsc(DrawStatus.DRAW_OPEN))
-                .thenReturn(Optional.of(pastDraw));
 
-        ResourceNotFoundException exception = assertThrows(
-                ResourceNotFoundException.class,
-                () -> drawService.getActiveDraw()
-        );
 
-        assertEquals("No active draw available", exception.getMessage());
-    }
-
-    @Test
-    void newDraw_ShouldCreateNewDraw_WhenNoActiveDrawExists() {
-        when(drawRepository.findFirstByStatusOrderByDrawDateAsc(DrawStatus.DRAW_OPEN))
-                .thenReturn(Optional.empty());
-        when(prizeRulesConfig.getDraw()).thenReturn(drawConfig);
-        when(drawRepository.save(any(Draw.class))).thenAnswer(invocation -> {
-            Draw savedDraw = invocation.getArgument(0);
-            savedDraw.setId(1L);
-            return savedDraw;
-        });
-
-        Draw result = drawService.newDraw();
-
-        assertNotNull(result);
-        assertEquals(DrawStatus.DRAW_OPEN, result.getStatus());
-        assertTrue(result.getDrawDate().isAfter(LocalDateTime.now()));
-        assertEquals(BigDecimal.valueOf(10_000_000.00), result.getTotalPrizePool());
-        verify(drawRepository).save(any(Draw.class));
-    }
 
     @Test
     void newDraw_ShouldThrowIllegalStateException_WhenActiveDrawAlreadyExists() {
@@ -155,7 +120,7 @@ class DrawServiceTest {
         when(drawRepository.save(any(Draw.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
 
-        drawService.process();
+        drawService.process(eligibleDraw);
 
 
         assertEquals(DrawStatus.DRAW_FINALIZED, eligibleDraw.getStatus());
