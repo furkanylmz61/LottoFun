@@ -44,7 +44,7 @@ lottery:
     min-number: 1
     max-number: 49
   draw:
-    frequencyMinutes: 1
+    frequencyMinutes: 40
     processingBatchSize: 1000
   prizes:
     jackpot: 1000000.00
